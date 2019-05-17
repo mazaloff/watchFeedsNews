@@ -12,7 +12,8 @@ import javax.inject.Singleton
     modules = [AndroidSupportInjectionModule::class,
         AppModule::class,
         NewsFeedsActivityModule::class,
-        NewsFeedsFragmentModule::class])
+        NewsFeedsFragmentModule::class]
+)
 interface AppComponent : AndroidInjector<AppWatchTwits> {
 
     @Component.Builder

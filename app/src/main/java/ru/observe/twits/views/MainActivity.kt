@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import ru.observe.twits.R
 
-import ru.observe.twits.databinding.ActivityMainMBinding
+import ru.observe.twits.databinding.ActivityMainBinding
 import ru.observe.twits.uimodels.ItemLink
 import ru.observe.twits.viewmodels.MainViewAdapter
 import ru.observe.twits.viewmodels.MainViewModel
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), MainViewAdapter.OnItemLinkClickListene
            .apply { startActivity(this) }
     }
 
-    private lateinit var binding: ActivityMainMBinding
+    private lateinit var binding: ActivityMainBinding
     private val mainViewAdapter = MainViewAdapter(arrayListOf(), this)
 
     private lateinit var viewModel : MainViewModel
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), MainViewAdapter.OnItemLinkClickListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main_m)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 

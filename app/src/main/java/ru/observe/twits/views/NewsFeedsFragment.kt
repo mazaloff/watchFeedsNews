@@ -14,7 +14,7 @@ import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.DaggerFragment
 
 import ru.observe.twits.R
-import ru.observe.twits.databinding.ActivityMainBinding
+import ru.observe.twits.databinding.ActivityNewsFeedsBinding
 import ru.observe.twits.uimodels.ItemFeed
 import ru.observe.twits.viewmodels.FeedViewAdapter
 import ru.observe.twits.viewmodels.FeedViewModel
@@ -29,7 +29,7 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
 
     private val feedRecyclerViewAdapter = FeedViewAdapter(ArrayList<ItemFeed>(), this)
 
-    private lateinit var bindingMain: ActivityMainBinding
+    private lateinit var bindingMain: ActivityNewsFeedsBinding
     private lateinit var mainActivity: NewsFeedsActivity
 
     private lateinit var linkNews: String
@@ -44,8 +44,8 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
 
         viewModel = ViewModelProviders.of(this, feedViewModelFactory).get(FeedViewModel::class.java)
 
-        bindingMain = DataBindingUtil.inflate<ActivityMainBinding>(inflater,
-            R.layout.activity_main, container, false
+        bindingMain = DataBindingUtil.inflate<ActivityNewsFeedsBinding>(inflater,
+            R.layout.activity_news_feeds, container, false
         )
 
         mainActivity = (bindingMain.root.context as NewsFeedsActivity)

@@ -3,11 +3,13 @@ package ru.observe.twits.viewmodels
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import ru.observe.twits.R
 
 import ru.observe.twits.databinding.ItemLinkBinding
 import java.util.ArrayList
 
 import ru.observe.twits.uimodels.ItemLink
+import ru.observe.twits.uimodels.TypeLink
 
 class MainViewAdapter(private var items: ArrayList<ItemLink>,
                       private val listener: OnItemLinkClickListener):
@@ -41,6 +43,13 @@ class MainViewAdapter(private var items: ArrayList<ItemLink>,
             if (listener != null) {
                 binding.root.setOnClickListener { listener.onItemLinkClick(itemLink) }
             }
+
+            if (itemLink.type == TypeLink.BBC) {
+                binding.itemLinkImage.setImageResource(R.mipmap.logo_bbc)
+            }else {
+                binding.itemLinkImage.setImageResource(R.mipmap.logo_twit)
+            }
+
             binding.executePendingBindings()
         }
     }

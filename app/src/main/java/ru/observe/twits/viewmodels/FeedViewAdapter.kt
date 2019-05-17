@@ -45,6 +45,8 @@ class FeedViewAdapter(private var items: ArrayList<ItemFeed>,
 
             Picasso.with(binding.root.context).load(itemFeed.thumbnail).into(binding.itemThumb)
 
+//            if (itemFeed.)
+
             if (listener != null) {
                 binding.root.setOnClickListener { listener.onItemClick(itemFeed) }
             }
