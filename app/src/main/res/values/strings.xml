@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Watch.Twits</string>
+    <string name="ok">OK</string>
+    <string name="exit">exit</string>
+    <string name="bbc">bbc</string>
+    <string name="twit">twit</string>
+</resources>
