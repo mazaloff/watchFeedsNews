@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 
 import ru.observe.twits.databinding.ItemNewBinding
+import ru.observe.twits.tools.CircleTransform
 import ru.observe.twits.uimodels.ItemFeed
 
 class FeedViewAdapter(private var items: List<ItemFeed>,
@@ -53,6 +54,8 @@ class FeedViewAdapter(private var items: List<ItemFeed>,
 
             Picasso.with(binding.root.context).load(itemFeed.thumbnail)
                 .resize(widthPx, heightPx)
+                .centerCrop()
+                .transform(CircleTransform(15,0))
                 .into(binding.itemThumb)
 
             if (listener != null) {

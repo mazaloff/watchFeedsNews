@@ -9,6 +9,7 @@ import ru.observe.twits.data.FeedRepository
 import ru.observe.twits.data.Resource
 import ru.observe.twits.tools.NonNullObservableField
 import ru.observe.twits.uimodels.Feed
+import ru.observe.twits.uimodels.ItemLink
 import ru.observe.twits.uimodels.Links
 
 class MainViewModel(private var feedRepository: FeedRepository) : ViewModel(), CoroutineScope {
@@ -16,39 +17,43 @@ class MainViewModel(private var feedRepository: FeedRepository) : ViewModel(), C
     private var job = Job()
     override var coroutineContext = job + Dispatchers.IO
 
-    val resourceData = MutableLiveData<Resource<Links>>()
+    val resourceData = MutableLiveData<Resource<List<ItemLink>>>()
 
     val isLoading = NonNullObservableField(false)
 
     fun loadLinks() {
 
-        val links = Links
+        val resultLinks = mutableListOf<ItemLink>()
 
         Log.d(BuildConfig.TAG, "Load News Links")
 
         isLoading.set(true)
-        resourceData.value = Resource(Resource.Status.LOADING, null, null)
+        resourceData.value = Resource(Resource.Status.LOADING, Links.items, null)
 
         if (!job.isActive) {
             job = Job()
             coroutineContext = job + Dispatchers.IO
         }
-        launch {
-            try {
-                for (item in links.items) {
+        for (item in Links.items) {
+            launch {
+                try {
                     feedRepository.getFeed(item.type.toString(), item.link,
                         object : FeedRepository.OnReadyCallback {
-                            override suspend fun onDataReady(data: Feed) {item.feed = data}
+                            override suspend fun onDataReady(data: Feed) {
+                                item.feed = data
+                            }
                         })
-                }
-                withContext(Dispatchers.Main) {
-                    isLoading.set(false)
-                    resourceData.value = Resource(Resource.Status.COMPLETED, links, null)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    isLoading.set(false)
-                    resourceData.value = Resource(Resource.Status.COMPLETED, null, e)
+                    withContext(Dispatchers.Main) {
+                        resultLinks += item
+                        isLoading.set(false)
+                        resourceData.value = Resource(Resource.Status.COMPLETED, Links.items, null)
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        resultLinks += item
+                        isLoading.set(false)
+                        resourceData.value = Resource(Resource.Status.COMPLETED, Links.items, e)
+                    }
                 }
             }
         }

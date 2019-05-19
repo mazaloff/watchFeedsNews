@@ -9,6 +9,7 @@ import ru.observe.twits.databinding.ItemLinkBinding
 
 import ru.observe.twits.uimodels.ItemLink
 import android.content.Context
+import ru.observe.twits.tools.CircleTransform
 
 
 class MainViewAdapter(
@@ -55,20 +56,24 @@ class MainViewAdapter(
                 binding.itemLinkImage1.setOnClickListener { listener.onItemLinkClick(itemLink) }
                 binding.itemLinkImage2.setOnClickListener { listener.onItemLinkClick(itemLink) }
                 binding.itemLinkImage3.setOnClickListener { listener.onItemLinkClick(itemLink) }
+                binding.itemLinkImage4.setOnClickListener { listener.onItemLinkClick(itemLink) }
                 binding.root.setOnClickListener { listener.onItemLinkClick(itemLink) }
             }
 
             itemLink.feed?.let {
-                for (i in 0..3) {
+                for (i in 0..4) {
                     val itemFeed = it.items[i]
                     Picasso.with(binding.root.context).load(itemFeed.thumbnail)
                         .resize(widthPx, heightPx)
+                        .centerCrop()
+                        .transform(CircleTransform(15,0))
                         .into(
                             when (i) {
                                 0 -> binding.itemLinkImage0
                                 1 -> binding.itemLinkImage1
                                 2 -> binding.itemLinkImage2
-                                else -> binding.itemLinkImage3
+                                3 -> binding.itemLinkImage3
+                                else -> binding.itemLinkImage4
                             }
                         )
                 }

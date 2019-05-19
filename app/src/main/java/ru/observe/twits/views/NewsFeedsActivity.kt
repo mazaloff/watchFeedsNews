@@ -4,6 +4,8 @@ import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.util.AndroidRuntimeException
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity
@@ -21,8 +23,6 @@ class NewsFeedsActivity : DaggerAppCompatActivity() {
     private var urlWeb: String? = null
     private lateinit var linkNews: String
     private lateinit var typeNews: String
-
-    private var returnPlayService = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -57,6 +57,19 @@ class NewsFeedsActivity : DaggerAppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.news_feeds, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menu_news_feeds_refresh -> {
+                return false
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
     fun showArticle(url: String) {
         val fragment = ViewUrlFragment()
         fragment.arguments = Bundle().apply {

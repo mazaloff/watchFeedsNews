@@ -7,9 +7,7 @@ import android.os.Bundle
 import android.databinding.DataBindingUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.DaggerFragment
@@ -45,6 +43,8 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        setHasOptionsMenu(true);
 
         viewModel = ViewModelProviders.of(this, feedViewModelFactory).get(FeedViewModel::class.java)
 
@@ -96,6 +96,8 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
                         }
                         if (!BuildConfig.DEBUG) {
                             textException = ""
+                        }else if (resource.exception != null) {
+                            resource.exception.printStackTrace();
                         }
                         Toast.makeText(
                             mainActivity,
@@ -109,10 +111,19 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
 
     }
 
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menu_news_feeds_refresh -> {
+                bindingMain.viewModel?.loadFeed(typeNews, linkNews)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onDestroyView() {
-        super.onDestroyView()
-        Log.e("finish", "finished fragment")
         bindingMain.viewModel?.cancel()
+        super.onDestroyView()
     }
 
     override fun onItemClick(itemFeed: ItemFeed) {

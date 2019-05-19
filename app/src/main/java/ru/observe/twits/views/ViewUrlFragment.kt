@@ -3,6 +3,7 @@ package ru.observe.twits.views
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
@@ -14,6 +15,7 @@ class ViewUrlFragment:Fragment() {
     private lateinit var vBrowser: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState)
         url = arguments?.getString("url") ?: ""
     }
@@ -27,5 +29,15 @@ class ViewUrlFragment:Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vBrowser.loadUrl(url)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.menu_news_feeds_refresh -> {
+                vBrowser.loadUrl(url)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

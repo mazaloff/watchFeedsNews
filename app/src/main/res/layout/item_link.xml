@@ -31,7 +31,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" android:layout_marginStart="3dp"
                     android:layout_marginEnd="3dp">
-                <LinearLayout android:layout_width="match_parent"
+                <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                <LinearLayout android:layout_width="wrap_content"
                               android:layout_height="wrap_content"
                               android:orientation="horizontal">
                     <ImageView
@@ -54,7 +57,13 @@
                             android:layout_width="100dp"
                             android:layout_height="64dp"
                             android:layout_marginStart="2dp"/>
+                    <ImageView
+                            android:id="@+id/item_link_image4"
+                            android:layout_width="100dp"
+                            android:layout_height="64dp"
+                            android:layout_marginStart="2dp"/>
                 </LinearLayout>
+                </HorizontalScrollView>
             </ScrollView>
             <TextView
                     android:id="@+id/textView"
