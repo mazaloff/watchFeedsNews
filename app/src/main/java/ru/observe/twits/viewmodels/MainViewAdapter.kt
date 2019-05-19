@@ -3,16 +3,18 @@ package ru.observe.twits.viewmodels
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import ru.observe.twits.R
+import com.squareup.picasso.Picasso
 
 import ru.observe.twits.databinding.ItemLinkBinding
-import java.util.ArrayList
 
 import ru.observe.twits.uimodels.ItemLink
-import ru.observe.twits.uimodels.TypeLink
+import android.content.Context
 
-class MainViewAdapter(private var items: ArrayList<ItemLink>,
-                      private val listener: OnItemLinkClickListener):
+
+class MainViewAdapter(
+    private var items: List<ItemLink>,
+    private val listener: OnItemLinkClickListener
+) :
     RecyclerView.Adapter<MainViewAdapter.ViewHolder>() {
 
     interface OnItemLinkClickListener {
@@ -31,23 +33,45 @@ class MainViewAdapter(private var items: ArrayList<ItemLink>,
 
     override fun getItemCount(): Int = items.size
 
-    fun replaceData(arrayList: ArrayList<ItemLink>) {
-        items = arrayList
+    fun replaceData(list: List<ItemLink>) {
+        items = list
         notifyDataSetChanged()
     }
 
-    class ViewHolder(var binding: ItemLinkBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(var binding: ItemLinkBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        private val heightPx = dpToPx(binding.root.context, 64.toFloat())
+        private val widthPx = dpToPx(binding.root.context, 100.toFloat())
+
+        private fun dpToPx(context: Context, dp: Float): Int {
+            return (dp * context.resources.displayMetrics.density).toInt()
+        }
+
         fun bind(itemLink: ItemLink, listener: OnItemLinkClickListener?) {
             binding.item = itemLink
 
             if (listener != null) {
+                binding.itemLinkImage0.setOnClickListener { listener.onItemLinkClick(itemLink) }
+                binding.itemLinkImage1.setOnClickListener { listener.onItemLinkClick(itemLink) }
+                binding.itemLinkImage2.setOnClickListener { listener.onItemLinkClick(itemLink) }
+                binding.itemLinkImage3.setOnClickListener { listener.onItemLinkClick(itemLink) }
                 binding.root.setOnClickListener { listener.onItemLinkClick(itemLink) }
             }
 
-            if (itemLink.type == TypeLink.BBC) {
-                binding.itemLinkImage.setImageResource(R.mipmap.logo_bbc)
-            }else {
-                binding.itemLinkImage.setImageResource(R.mipmap.logo_twit)
+            itemLink.feed?.let {
+                for (i in 0..3) {
+                    val itemFeed = it.items[i]
+                    Picasso.with(binding.root.context).load(itemFeed.thumbnail)
+                        .resize(widthPx, heightPx)
+                        .into(
+                            when (i) {
+                                0 -> binding.itemLinkImage0
+                                1 -> binding.itemLinkImage1
+                                2 -> binding.itemLinkImage2
+                                else -> binding.itemLinkImage3
+                            }
+                        )
+                }
             }
 
             binding.executePendingBindings()

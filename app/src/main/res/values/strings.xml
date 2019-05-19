@@ -1,7 +1,4 @@
 <resources>
     <string name="app_name">Feeds-News</string>
-    <string name="ok">OK</string>
-    <string name="exit">exit</string>
-    <string name="bbc">bbc</string>
-    <string name="twit">twit</string>
+    <string name="exception_response_data">Ошибка получения данных</string>
 </resources>

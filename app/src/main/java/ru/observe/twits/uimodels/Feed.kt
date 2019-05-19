@@ -3,11 +3,11 @@ package ru.observe.twits.uimodels
 import ru.observe.twits.uimodels.bbc.BbcRss
 import ru.observe.twits.uimodels.twit.TwitRss
 
-class Feed constructor(val items: ArrayList<ItemFeed>) {
+class Feed constructor(val items: MutableList<ItemFeed>) {
 
     constructor(from: BbcRss) : this(
         from.rss.channel.item.mapTo(
-            ArrayList<ItemFeed>(), { item ->
+            mutableListOf<ItemFeed>(), { item ->
                 ItemFeed(
                     item.title,
                     item.link,
@@ -20,7 +20,7 @@ class Feed constructor(val items: ArrayList<ItemFeed>) {
 
     constructor(from: TwitRss) : this(
         from.rss.channel.item.mapTo(
-            ArrayList<ItemFeed>(), { item ->
+            mutableListOf<ItemFeed>(), { item ->
                 ItemFeed(
                     item.title[0].content,
                     item.link,

@@ -8,7 +8,6 @@ import com.google.gson.Gson
 import fr.arnaudguyon.xmltojsonlib.XmlToJson
 import ru.observe.twits.uimodels.bbc.BbcRss
 import ru.observe.twits.uimodels.Feed
-import ru.observe.twits.uimodels.ItemFeed
 import ru.observe.twits.uimodels.TypeLink
 import ru.observe.twits.uimodels.twit.TwitRss
 
@@ -29,7 +28,7 @@ object ServerRequests {
         }
         val json = convertXmlToJson(xml)
         return when(type) {
-            TypeLink.TWIT -> Feed(Gson().fromJson(json, TwitRss::class.java))
+            TypeLink.TWiT -> Feed(Gson().fromJson(json, TwitRss::class.java))
             TypeLink.BBC -> Feed(Gson().fromJson(json, BbcRss::class.java))
         }
     }

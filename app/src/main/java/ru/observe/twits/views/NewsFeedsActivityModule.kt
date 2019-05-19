@@ -7,6 +7,6 @@ import dagger.android.ContributesAndroidInjector
 internal abstract class NewsFeedsActivityModule {
 
     @ContributesAndroidInjector()
-    internal abstract fun mainActivity(): NewsFeedsActivity
+    internal abstract fun newsFeedsActivity(): NewsFeedsActivity
 
 }

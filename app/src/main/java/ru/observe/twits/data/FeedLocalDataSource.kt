@@ -20,7 +20,7 @@ class FeedLocalDataSource {
             val data = realm.where(FeedR::class.java).findFirst() ?: return@executeTransaction
             newInstance =
                 Feed(data.items.mapTo(
-                    ArrayList<ItemFeed>(), { item ->
+                    mutableListOf<ItemFeed>(), { item ->
                         ItemFeed(
                             item.title,
                             item.link,
