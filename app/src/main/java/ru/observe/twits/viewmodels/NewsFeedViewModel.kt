@@ -9,14 +9,14 @@ import ru.observe.twits.BuildConfig
 import ru.observe.twits.data.FeedRepository
 import ru.observe.twits.data.Resource
 import ru.observe.twits.tools.NonNullObservableField
-import ru.observe.twits.uimodels.Feed
+import ru.observe.twits.uimodels.NewsFeed
 
-class FeedViewModel(private var feedRepository: FeedRepository) : ViewModel(), CoroutineScope {
+class NewsFeedViewModel(private var feedRepository: FeedRepository) : ViewModel(), CoroutineScope {
 
     private var job = Job()
     override var coroutineContext = job + Dispatchers.IO
 
-    val resourceData = MutableLiveData<Resource<Feed>>()
+    val resourceData = MutableLiveData<Resource<NewsFeed>>()
 
     val isLoading = NonNullObservableField(false)
 
@@ -38,7 +38,7 @@ class FeedViewModel(private var feedRepository: FeedRepository) : ViewModel(), C
                     try {
                         feedRepository.getFeed(strType, url,
                             object : FeedRepository.OnReadyCallback {
-                                override suspend fun onDataReady(data: Feed) {
+                                override suspend fun onDataReady(data: NewsFeed) {
                                     withContext(Dispatchers.Main) {
                                         isLoading.set(false)
                                         resourceData.value = Resource(Resource.Status.COMPLETED, data, null)

@@ -3,18 +3,18 @@ package ru.observe.twits
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
-import ru.observe.twits.views.MainActivityModule
-import ru.observe.twits.views.NewsFeedsActivityModule
-import ru.observe.twits.views.NewsFeedsFragmentModule
+import ru.observe.twits.views.ChannelsActivityModule
+import ru.observe.twits.views.NewsFeedActivityModule
+import ru.observe.twits.views.NewsFeedFragmentModule
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [AndroidSupportInjectionModule::class,
         AppModule::class,
-        MainActivityModule::class,
-        NewsFeedsActivityModule::class,
-        NewsFeedsFragmentModule::class]
+        ChannelsActivityModule::class,
+        NewsFeedActivityModule::class,
+        NewsFeedFragmentModule::class]
 )
 interface AppComponent : AndroidInjector<AppWatchTwits> {
 

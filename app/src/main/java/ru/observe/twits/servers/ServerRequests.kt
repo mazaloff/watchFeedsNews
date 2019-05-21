@@ -7,13 +7,14 @@ import java.net.URL
 import com.google.gson.Gson
 import fr.arnaudguyon.xmltojsonlib.XmlToJson
 import ru.observe.twits.uimodels.bbc.BbcRss
-import ru.observe.twits.uimodels.Feed
-import ru.observe.twits.uimodels.TypeLink
+import ru.observe.twits.uimodels.NewsFeed
+import ru.observe.twits.uimodels.TypeChannel
+import ru.observe.twits.uimodels.lenta.LentaRss
 import ru.observe.twits.uimodels.twit.TwitRss
 
 object ServerRequests {
 
-    fun createRequest(type: TypeLink, url: String): Feed {
+    fun createRequest(type: TypeChannel, url: String): NewsFeed {
         val urlCon = URL(url).openConnection() as HttpURLConnection
         var xml = ""
         try {
@@ -28,8 +29,9 @@ object ServerRequests {
         }
         val json = convertXmlToJson(xml)
         return when(type) {
-            TypeLink.TWiT -> Feed(Gson().fromJson(json, TwitRss::class.java))
-            TypeLink.BBC -> Feed(Gson().fromJson(json, BbcRss::class.java))
+            TypeChannel.LENTA -> NewsFeed(Gson().fromJson(json, LentaRss::class.java))
+            TypeChannel.TWiT -> NewsFeed(Gson().fromJson(json, TwitRss::class.java))
+            TypeChannel.BBC -> NewsFeed(Gson().fromJson(json, BbcRss::class.java))
         }
     }
 

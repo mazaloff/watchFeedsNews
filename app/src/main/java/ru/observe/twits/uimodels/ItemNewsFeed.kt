@@ -4,7 +4,7 @@ import android.databinding.BaseObservable
 import android.databinding.Bindable
 import com.android.databinding.library.baseAdapters.BR
 
-class ItemFeed(
+class ItemNewsFeed(
     title: String,
     val link: String,
     val thumbnail: String,

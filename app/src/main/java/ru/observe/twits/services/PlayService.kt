@@ -9,16 +9,25 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import ru.observe.twits.views.NewsFeedsActivity
+import ru.observe.twits.views.NewsFeedActivity
 import java.util.*
 import kotlin.concurrent.schedule
 
 import ru.observe.twits.R
+import ru.observe.twits.managers.NetManager
+import ru.observe.twits.tools.Localizations
 
 class PlayService : Service() {
 
     private var player: MediaPlayer? = null
     private var notification: NotificationCompat.Builder? = null
+    private var currentPosition = 0
+
+    private var currentContentText = Localizations.serviceLoad
+
+    private val strStop = Localizations.serviceStop
+    private val strPause = Localizations.servicePause
+    private val strResume = Localizations.serviceResume
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -32,13 +41,21 @@ class PlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        player?.stop()
 
-        if (intent?.action == "stop") {
+        if ((NetManager(applicationContext).isConnectedToInternet != true)
+            || (intent?.action == strStop)
+        ) {
+            player?.stop()
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(333)
             stopSelf()
             return START_NOT_STICKY
         }
+
+        if (intent?.action == strPause) {
+            currentPosition = player?.currentPosition ?: 0
+        }
+
+        player?.stop()
 
         val title = intent?.extras?.getString("title") ?: return START_NOT_STICKY
         val urlMp3 = intent.extras?.getString("urlMp3") ?: return START_NOT_STICKY
@@ -57,40 +74,54 @@ class PlayService : Service() {
         player?.prepareAsync()
         player?.setOnPreparedListener { p ->
 
-            p.start()
+            if (intent.action != strPause) {
+                p.seekTo(currentPosition)
+                p.start()
+            }
 
             Timer().schedule(1000, 1000) {
                 if (!p.isPlaying) {
                     cancel()
                     return@schedule
                 }
-                notification?.setContentText(timeSecondsToStr((p.duration - p.currentPosition) / 1000))
+                currentContentText = timeSecondsToStr((p.duration - p.currentPosition) / 1000)
+                notification?.setContentText(currentContentText)
                 (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
                     .notify(333, notification?.build())
-
             }
         }
 
-        val notificationIntend = Intent(this, NewsFeedsActivity::class.java)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        val notificationIntend = Intent(this, NewsFeedActivity::class.java)
+            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .putExtra("urlWeb", urlWeb)
             .putExtra("linkNews", linkNews)
             .putExtra("typeNews", typeNews)
-            .putExtra("urlWeb", urlWeb)
 
-        val iStop = Intent(this, PlayService::class.java).setAction("stop")
+        val iStop = Intent(this, PlayService::class.java).setAction(strStop)
         val piStop = PendingIntent.getService(this, 0, iStop, PendingIntent.FLAG_CANCEL_CURRENT)
+
+        val currentOnOffAction = if (intent.action != strPause) strPause else strResume
+        val iPause = Intent(this, PlayService::class.java).setAction(currentOnOffAction)
+            .putExtra("title", title)
+            .putExtra("urlMp3", urlMp3)
+            .putExtra("urlWeb", urlWeb)
+            .putExtra("linkNews", linkNews)
+            .putExtra("typeNews", typeNews)
+
+        val piPause = PendingIntent.getService(this, 0, iPause, PendingIntent.FLAG_UPDATE_CURRENT)
 
         notification = NotificationCompat.Builder(this, "1")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
-            .setContentText("you can turn off playing mp3")
+            .setContentText(currentContentText)
             .setContentIntent(
                 PendingIntent.getActivities(
                     this, 0,
                     arrayOf<Intent?>(notificationIntend), PendingIntent.FLAG_CANCEL_CURRENT
                 )
             )
-            .addAction(R.mipmap.ic_launcher, "stop", piStop)
+            .addAction(R.mipmap.ic_launcher, currentOnOffAction, piPause)
+            .addAction(R.mipmap.ic_launcher, strStop, piStop)
             .setOngoing(false)
 
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(333, notification?.build())

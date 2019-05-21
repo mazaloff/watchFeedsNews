@@ -4,10 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import ru.observe.twits.data.FeedRepository
-import ru.observe.twits.viewmodels.MainViewModelFactory
+import ru.observe.twits.viewmodels.ChannelsViewModelFactory
 
 @Module
-internal abstract class MainActivityModule {
+internal abstract class ChannelsActivityModule {
 
     @Module
     companion object {
@@ -15,12 +15,12 @@ internal abstract class MainActivityModule {
         @JvmStatic
         @Provides
         internal fun providesMainViewModelFactory(feedRepository: FeedRepository)
-                : MainViewModelFactory {
-            return MainViewModelFactory(feedRepository)
+                : ChannelsViewModelFactory {
+            return ChannelsViewModelFactory(feedRepository)
         }
     }
 
     @ContributesAndroidInjector()
-    internal abstract fun mainActivity(): MainActivity
+    internal abstract fun mainActivity(): ChannelsActivity
 
 }

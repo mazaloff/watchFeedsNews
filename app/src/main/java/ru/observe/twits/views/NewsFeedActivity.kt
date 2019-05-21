@@ -11,14 +11,12 @@ import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity
 import ru.observe.twits.R
 
-import ru.observe.twits.databinding.ActivityFragmentBinding
-import ru.observe.twits.databinding.ActivityMainBinding
+import ru.observe.twits.databinding.AcPlaceNewsFeedBinding
 import ru.observe.twits.services.PlayService
 
-class NewsFeedsActivity : DaggerAppCompatActivity() {
+class NewsFeedActivity : DaggerAppCompatActivity() {
 
-    private lateinit var bindingMain: ActivityMainBinding
-    private lateinit var bindingFragment: ActivityFragmentBinding
+    private lateinit var bindingFragment: AcPlaceNewsFeedBinding
 
     private var urlWeb: String? = null
     private lateinit var linkNews: String
@@ -30,22 +28,21 @@ class NewsFeedsActivity : DaggerAppCompatActivity() {
 
         onNewIntent(intent);
 
-        bindingMain = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        bindingFragment = DataBindingUtil.setContentView(this, R.layout.activity_fragment)
+        bindingFragment = DataBindingUtil.setContentView(this, R.layout.ac_place_news_feed)
 
         if (savedInstanceState != null) return
 
-        val fragment = NewsFeedsFragment()
+        val fragment = NewsFeedFragment()
         fragment.arguments = Bundle().apply {
             putString("linkNews", linkNews)
             putString("typeNews", typeNews)
         }
+
         supportFragmentManager.beginTransaction().replace(
             bindingFragment.fragmentPlace.id, fragment
         ).commitAllowingStateLoss()
 
-        urlWeb?.let { showArticle(it) }
-
+        urlWeb?.let { showArticle(it)}
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -58,7 +55,7 @@ class NewsFeedsActivity : DaggerAppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.news_feeds, menu)
+        menuInflater.inflate(R.menu.news_feed, menu)
         return true
     }
 
@@ -70,8 +67,17 @@ class NewsFeedsActivity : DaggerAppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+        }else {
+            super.onBackPressed()
+        }
+    }
+
     fun showArticle(url: String) {
-        val fragment = ViewUrlFragment()
+        val fragment = BrowserFragment()
         fragment.arguments = Bundle().apply {
             putString("url", url)
         }
@@ -85,7 +91,7 @@ class NewsFeedsActivity : DaggerAppCompatActivity() {
         } else {
             val framePlace = bindingFragment.fragmentPlace
             supportFragmentManager.apply {
-                beginTransaction().add(framePlace.id, fragment).addToBackStack("main").commitAllowingStateLoss()
+                beginTransaction().add(framePlace.id, fragment).addToBackStack("newsFeeds").commitAllowingStateLoss()
             }
         }
     }

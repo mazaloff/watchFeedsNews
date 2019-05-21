@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+            android:title="@string/menu_refresh"
+            android:id="@+id/menu_main_refresh"
+            app:showAsAction="ifRoom"
+            android:icon="@android:drawable/ic_popup_sync"/>
+    <item
+            android:title="@string/menu_lenta_ru"
+            android:id="@+id/menu_lenta"
+            app:showAsAction="never"/>
+    <item
+            android:title="@string/menu_bbc"
+            android:id="@+id/menu_bbc"
+            app:showAsAction="never"/>
+    <item
+            android:title="@string/menu_twit"
+            android:id="@+id/menu_twit"
+            app:showAsAction="never"/>
+
+</menu>

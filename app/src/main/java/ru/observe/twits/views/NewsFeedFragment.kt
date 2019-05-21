@@ -15,24 +15,24 @@ import ru.observe.twits.BuildConfig
 
 import ru.observe.twits.R
 import ru.observe.twits.data.Resource
-import ru.observe.twits.databinding.ActivityNewsFeedsBinding
-import ru.observe.twits.uimodels.ItemFeed
-import ru.observe.twits.viewmodels.FeedViewAdapter
-import ru.observe.twits.viewmodels.FeedViewModel
-import ru.observe.twits.viewmodels.FeedViewModelFactory
+import ru.observe.twits.databinding.AcNewsFeedBinding
+import ru.observe.twits.uimodels.ItemNewsFeed
+import ru.observe.twits.viewmodels.NewsFeedViewAdapter
+import ru.observe.twits.viewmodels.NewsFeedViewModel
+import ru.observe.twits.viewmodels.NewsFeedViewModelFactory
 import javax.inject.Inject
 
-class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener {
+class NewsFeedFragment : DaggerFragment(), NewsFeedViewAdapter.OnItemClickListener {
 
     @Inject
-    lateinit var feedViewModelFactory: FeedViewModelFactory
+    lateinit var newsFeedViewModelFactory: NewsFeedViewModelFactory
 
-    private lateinit var viewModel: FeedViewModel
+    private lateinit var newsFeedViewModel: NewsFeedViewModel
 
-    private val feedRecyclerViewAdapter = FeedViewAdapter(listOf<ItemFeed>(), this)
+    private val newsFeedViewAdapter = NewsFeedViewAdapter(listOf<ItemNewsFeed>(), this)
 
-    private lateinit var bindingMain: ActivityNewsFeedsBinding
-    private lateinit var mainActivity: NewsFeedsActivity
+    private lateinit var bindingSelf: AcNewsFeedBinding
+    private lateinit var newsFeedActivity: NewsFeedActivity
 
     private lateinit var linkNews: String
     private lateinit var typeNews: String
@@ -46,14 +46,14 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
 
         setHasOptionsMenu(true);
 
-        viewModel = ViewModelProviders.of(this, feedViewModelFactory).get(FeedViewModel::class.java)
+        newsFeedViewModel = ViewModelProviders.of(this, newsFeedViewModelFactory).get(NewsFeedViewModel::class.java)
 
-        bindingMain = DataBindingUtil.inflate<ActivityNewsFeedsBinding>(
+        bindingSelf = DataBindingUtil.inflate<AcNewsFeedBinding>(
             inflater,
-            R.layout.activity_news_feeds, container, false
+            R.layout.ac_news_feed, container, false
         )
 
-        mainActivity = (bindingMain.root.context as NewsFeedsActivity)
+        newsFeedActivity = (bindingSelf.root.context as NewsFeedActivity)
 
         arguments?.apply {
             getString("linkNews")?.let {
@@ -64,32 +64,32 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
             }
         }
 
-        return bindingMain.root
+        return bindingSelf.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        bindingMain.viewModel = viewModel
-        bindingMain.executePendingBindings()
+        bindingSelf.viewModel = newsFeedViewModel
+        bindingSelf.executePendingBindings()
 
-        bindingMain.act1RecView.layoutManager = LinearLayoutManager(bindingMain.root.context)
-        bindingMain.act1RecView.adapter = feedRecyclerViewAdapter
+        bindingSelf.act1RecView.layoutManager = LinearLayoutManager(bindingSelf.root.context)
+        bindingSelf.act1RecView.adapter = newsFeedViewAdapter
 
         if (savedInstanceState == null) {
-            bindingMain.viewModel?.loadFeed(typeNews, linkNews)
+            bindingSelf.viewModel?.loadFeed(typeNews, linkNews)
         }
 
-        bindingMain.viewModel?.resourceData?.observe(this,
+        bindingSelf.viewModel?.resourceData?.observe(this,
             Observer { resource ->
                 if (resource != null) {
                     if (resource.status == Resource.Status.COMPLETED && resource.data != null) {
-                        feedRecyclerViewAdapter.replaceData(resource.data.items)
+                        newsFeedViewAdapter.replaceData(resource.data.items)
                     } else if (resource.status == Resource.Status.COMPLETED) {
-                        feedRecyclerViewAdapter.replaceData(listOf<ItemFeed>())
+                        newsFeedViewAdapter.replaceData(listOf<ItemNewsFeed>())
                         var textException = when (resource.exception) {
                             null -> ""
-                            else -> "\n" + resource.exception.message ?: ""
+                            else -> "\n" + resource.exception.message
                         }
                         if (textException.isNotEmpty()) {
                             Log.e(BuildConfig.TAG, textException)
@@ -100,7 +100,7 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
                             resource.exception.printStackTrace();
                         }
                         Toast.makeText(
-                            mainActivity,
+                            newsFeedActivity,
                             "${getString(R.string.exception_response_data)}. $textException", Toast.LENGTH_LONG
                         )
                             .show()
@@ -114,7 +114,7 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.menu_news_feeds_refresh -> {
-                bindingMain.viewModel?.loadFeed(typeNews, linkNews)
+                bindingSelf.viewModel?.loadFeed(typeNews, linkNews)
                 return true
             }
         }
@@ -122,14 +122,14 @@ class NewsFeedsFragment : DaggerFragment(), FeedViewAdapter.OnItemClickListener 
     }
 
     override fun onDestroyView() {
-        bindingMain.viewModel?.cancel()
+        bindingSelf.viewModel?.cancel()
         super.onDestroyView()
     }
 
-    override fun onItemClick(itemFeed: ItemFeed) {
-        mainActivity.showArticle(itemFeed.link)
-        if (itemFeed.guid.isNotEmpty()) {
-            mainActivity.playMusic(itemFeed.guid, itemFeed.link, itemFeed.title)
+    override fun onItemClick(itemNewsFeed: ItemNewsFeed) {
+        newsFeedActivity.showArticle(itemNewsFeed.link)
+        if (itemNewsFeed.guid.isNotEmpty()) {
+            newsFeedActivity.playMusic(itemNewsFeed.guid, itemNewsFeed.link, itemNewsFeed.title)
         }
     }
 

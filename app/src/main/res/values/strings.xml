@@ -1,5 +1,12 @@
 <resources>
-    <string name="app_name">Feeds-News</string>
+    <string name="app_name">Ленты новостей</string>
     <string name="exception_response_data">Ошибка получения данных</string>
     <string name="menu_refresh">Обновить</string>
+    <string name="service_pause">пауза</string>
+    <string name="service_resume">продолжить</string>
+    <string name="service_stop">стоп</string>
+    <string name="service_load">загрузка mp3 с сайта…</string>
+    <string name="menu_bbc">bbc.com</string>
+    <string name="menu_twit">twit.tv</string>
+    <string name="menu_lenta_ru">lenta.ru</string>
 </resources>

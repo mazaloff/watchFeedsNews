@@ -4,9 +4,9 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-internal abstract class NewsFeedsActivityModule {
+internal abstract class NewsFeedActivityModule {
 
     @ContributesAndroidInjector()
-    internal abstract fun newsFeedsActivity(): NewsFeedsActivity
+    internal abstract fun newsFeedsActivity(): NewsFeedActivity
 
 }

@@ -1,6 +1,7 @@
 package ru.observe.twits.uimodels
 
-enum class TypeLink {
+enum class TypeChannel {
+    LENTA,
     BBC,
     TWiT
 }

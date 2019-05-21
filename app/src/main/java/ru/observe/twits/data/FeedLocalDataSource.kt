@@ -3,25 +3,25 @@ package ru.observe.twits.data
 import io.realm.Realm
 import io.realm.RealmList
 
-import ru.observe.twits.models.FeedR
-import ru.observe.twits.models.ItemFeedR
-import ru.observe.twits.uimodels.Feed
-import ru.observe.twits.uimodels.ItemFeed
+import ru.observe.twits.models.NewsFeedR
+import ru.observe.twits.models.ItemNewsFeedR
+import ru.observe.twits.uimodels.NewsFeed
+import ru.observe.twits.uimodels.ItemNewsFeed
 
 class FeedLocalDataSource {
 
     interface OnLocalDataReady {
-        suspend fun onLocalDataReady(data: Feed)
+        suspend fun onLocalDataReady(data: NewsFeed)
     }
 
     suspend fun getFeed(onLocalDataReady: OnLocalDataReady) {
-        var newInstance: Feed? = null
+        var newInstance: NewsFeed? = null
         Realm.getDefaultInstance().executeTransaction { realm ->
-            val data = realm.where(FeedR::class.java).findFirst() ?: return@executeTransaction
+            val data = realm.where(NewsFeedR::class.java).findFirst() ?: return@executeTransaction
             newInstance =
-                Feed(data.items.mapTo(
-                    mutableListOf<ItemFeed>(), { item ->
-                        ItemFeed(
+                NewsFeed(data.items.mapTo(
+                    mutableListOf<ItemNewsFeed>(), { item ->
+                        ItemNewsFeed(
                             item.title,
                             item.link,
                             item.thumbnail,
@@ -34,11 +34,11 @@ class FeedLocalDataSource {
         newInstance?.let { onLocalDataReady.onLocalDataReady(it) }
     }
 
-    fun saveData(data: Feed) {
+    fun saveData(data: NewsFeed) {
         val newInstance =
-            FeedR(data.items.mapTo(
-                RealmList<ItemFeedR>(), { item ->
-                    ItemFeedR(
+            NewsFeedR(data.items.mapTo(
+                RealmList<ItemNewsFeedR>(), { item ->
+                    ItemNewsFeedR(
                         item.title,
                         item.link,
                         item.thumbnail,
@@ -48,7 +48,7 @@ class FeedLocalDataSource {
                 }
             ))
         Realm.getDefaultInstance().executeTransaction { realm ->
-            realm.where(FeedR::class.java).findAll().forEach { obj ->
+            realm.where(NewsFeedR::class.java).findAll().forEach { obj ->
                 obj.deleteFromRealm()
             }
             realm.copyToRealm(newInstance)

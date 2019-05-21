@@ -4,10 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import ru.observe.twits.data.FeedRepository
-import ru.observe.twits.viewmodels.FeedViewModelFactory
+import ru.observe.twits.viewmodels.NewsFeedViewModelFactory
 
 @Module
-internal abstract class NewsFeedsFragmentModule {
+internal abstract class NewsFeedFragmentModule {
 
     @Module
     companion object {
@@ -15,12 +15,12 @@ internal abstract class NewsFeedsFragmentModule {
         @JvmStatic
         @Provides
         internal fun providesFeedViewModelFactory(feedRepository: FeedRepository)
-                : FeedViewModelFactory {
-            return FeedViewModelFactory(feedRepository)
+                : NewsFeedViewModelFactory {
+            return NewsFeedViewModelFactory(feedRepository)
         }
     }
 
     @ContributesAndroidInjector()
-    internal abstract fun mainFragment(): NewsFeedsFragment
+    internal abstract fun mainFragment(): NewsFeedFragment
 
 }

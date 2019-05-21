@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import ru.observe.twits.R
 
-class ViewUrlFragment:Fragment() {
+class BrowserFragment:Fragment() {
 
     private lateinit var url: String
     private lateinit var vBrowser: WebView
@@ -21,7 +21,7 @@ class ViewUrlFragment:Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.second_fragment, container, false)
+        val view = inflater.inflate(R.layout.fr_browser, container, false)
         vBrowser = view.findViewById(R.id.fragment_browser)
         return view
     }
@@ -40,4 +40,5 @@ class ViewUrlFragment:Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
+
 }
