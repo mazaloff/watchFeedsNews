@@ -12,17 +12,22 @@ data class Channel(
     val item: List<Item>
 )
 
-data class Item(
+class Item(
     val content: Content,
-    val description: String,
+    description: String,
     val guid: Guid,
     val link: String,
     val pubDate: String,
     val title: List<TitleX>
-)
+) {
+    val description = description
+        get() = if (!field.startsWith("<p><img"))
+            field.substringAfter("/></p>")
+            else field
+}
 
 data class Content(
-    val thumbnail: Thumbnail,
+    val thumbnail: Thumbnail?,
     val url: String
 )
 

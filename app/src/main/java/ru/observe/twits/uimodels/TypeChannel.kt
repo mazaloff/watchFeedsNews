@@ -1,7 +1,12 @@
 package ru.observe.twits.uimodels
 
-enum class TypeChannel {
+import java.io.Serializable
+
+enum class TypeChannel() : Serializable {
     LENTA,
+    GAZETA,
     BBC,
-    TWiT
+    TWiT;
+
+
 }

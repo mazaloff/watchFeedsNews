@@ -17,7 +17,7 @@ data class Item(
     val guid: Guid,
     val link: String,
     val pubDate: String,
-    val thumbnail: Thumbnail,
+    val thumbnail: Thumbnail?,
     val title: String
 )
 

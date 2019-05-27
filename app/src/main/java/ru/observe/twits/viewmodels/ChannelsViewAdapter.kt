@@ -9,9 +9,11 @@ import ru.observe.twits.databinding.ItemChannelBinding
 
 import ru.observe.twits.uimodels.ItemChannel
 import android.content.Context
+import android.support.v7.util.DiffUtil
 import android.widget.ImageView
 import ru.observe.twits.tools.CircleTransform
 import kotlin.math.min
+import android.os.Parcelable
 
 
 class ChannelsViewAdapter(
@@ -37,8 +39,8 @@ class ChannelsViewAdapter(
     override fun getItemCount(): Int = items.size
 
     fun replaceData(list: List<ItemChannel>) {
-        items = list
-        notifyDataSetChanged()
+       items = list
+       notifyDataSetChanged()
     }
 
     class ViewHolder(var binding: ItemChannelBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -51,6 +53,7 @@ class ChannelsViewAdapter(
         }
 
         fun bind(itemChannel: ItemChannel, listener: OnItemLinkClickListener?) {
+
             binding.item = itemChannel
 
             if (itemChannel.newsFeed == null) {
@@ -68,12 +71,15 @@ class ChannelsViewAdapter(
                 binding.root.setOnClickListener { listener.onItemLinkClick(itemChannel) }
             }
 
-            for (i in 0 until min(imageCount,itemsSize)) {
-                Picasso.with(binding.root.context).load(itemChannel.newsFeed!!.items[i].thumbnail)
-                    .resize(widthPx, heightPx)
-                    .centerCrop()
-                    .transform(CircleTransform(15,0))
-                    .into(binding.itemRootLayout.getChildAt(i) as ImageView)
+            for (i in 0 until min(imageCount, itemsSize)) {
+                val urlImage = itemChannel.newsFeed!!.items[i].thumbnail
+                if (urlImage.isNotEmpty()) {
+                    Picasso.with(binding.root.context).load(urlImage)
+                        .resize(widthPx, heightPx)
+                        .centerCrop()
+                        .transform(CircleTransform(15, 0))
+                        .into(binding.itemRootLayout.getChildAt(i) as ImageView)
+                }
             }
 
             binding.executePendingBindings()

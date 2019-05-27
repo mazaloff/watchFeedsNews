@@ -54,6 +54,7 @@ class ChannelsViewModel(private var feedRepository: FeedRepository) : ViewModel(
                     withContext(Dispatchers.Main) {
                         resultLinks += item
                         isLoading.set(false)
+                        e.printStackTrace()
                         resourceData.value = Resource(Resource.Status.COMPLETED, channel.items, e)
                     }
                 }

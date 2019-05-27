@@ -7,6 +7,7 @@ data class Resource<T>(
 ) {
     enum class Status {
         LOADING,
-        COMPLETED
+        COMPLETED,
+        FAILED
     }
 }

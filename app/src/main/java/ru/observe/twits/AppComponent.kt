@@ -5,7 +5,6 @@ import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 import ru.observe.twits.views.ChannelsActivityModule
 import ru.observe.twits.views.NewsFeedActivityModule
-import ru.observe.twits.views.NewsFeedFragmentModule
 import javax.inject.Singleton
 
 @Singleton
@@ -13,8 +12,7 @@ import javax.inject.Singleton
     modules = [AndroidSupportInjectionModule::class,
         AppModule::class,
         ChannelsActivityModule::class,
-        NewsFeedActivityModule::class,
-        NewsFeedFragmentModule::class]
+        NewsFeedActivityModule::class]
 )
 interface AppComponent : AndroidInjector<AppWatchTwits> {
 

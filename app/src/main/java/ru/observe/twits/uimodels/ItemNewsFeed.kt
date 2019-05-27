@@ -2,6 +2,7 @@ package ru.observe.twits.uimodels
 
 import android.databinding.BaseObservable
 import android.databinding.Bindable
+import android.support.v7.util.DiffUtil
 import com.android.databinding.library.baseAdapters.BR
 
 class ItemNewsFeed(
@@ -23,5 +24,26 @@ class ItemNewsFeed(
             field = value
             notifyPropertyChanged(BR.description)
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is ItemNewsFeed) return false
+        return this.guid == (other as ItemNewsFeed).guid
+    }
+
+    override fun hashCode(): Int {
+        return this.guid.hashCode()
+    }
+
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ItemNewsFeed>() {
+            override fun areItemsTheSame(oldItem: ItemNewsFeed, newItem: ItemNewsFeed): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: ItemNewsFeed, newItem: ItemNewsFeed): Boolean {
+                return oldItem.guid == newItem.guid
+            }
+        }
+    }
 
 }

@@ -11,6 +11,10 @@
             android:id="@+id/menu_lenta"
             app:showAsAction="never"/>
     <item
+            android:title="@string/menu_gazeta_ru"
+            android:id="@+id/menu_gazeta"
+            app:showAsAction="never"/>
+    <item
             android:title="@string/menu_bbc"
             android:id="@+id/menu_bbc"
             app:showAsAction="never"/>

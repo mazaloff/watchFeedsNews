@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ленты новостей</string>
+    <string name="app_name">News Feeds</string>
     <string name="exception_response_data">Ошибка получения данных</string>
     <string name="menu_refresh">Обновить</string>
     <string name="service_pause">пауза</string>
@@ -9,4 +9,5 @@
     <string name="menu_bbc">bbc.com</string>
     <string name="menu_twit">twit.tv</string>
     <string name="menu_lenta_ru">lenta.ru</string>
+    <string name="menu_gazeta_ru">gazeta.ru</string>
 </resources>

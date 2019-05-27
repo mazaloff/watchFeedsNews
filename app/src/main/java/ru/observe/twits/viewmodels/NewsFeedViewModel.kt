@@ -1,74 +1,59 @@
 package ru.observe.twits.viewmodels
 
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.util.Log
-import kotlinx.coroutines.*
-import ru.observe.twits.BuildConfig
+import android.arch.lifecycle.Transformations
+import android.arch.paging.PagedList
+import android.arch.paging.LivePagedListBuilder
+import android.arch.lifecycle.LiveData
 
-import ru.observe.twits.data.FeedRepository
+import java.util.concurrent.Executors
+
 import ru.observe.twits.data.Resource
-import ru.observe.twits.tools.NonNullObservableField
-import ru.observe.twits.uimodels.NewsFeed
+import ru.observe.twits.uimodels.ItemNewsFeed
+import ru.observe.twits.data.FeedRepository
+import ru.observe.twits.data.FeedDataFactory
+import java.util.concurrent.ExecutorService
 
-class NewsFeedViewModel(private var feedRepository: FeedRepository) : ViewModel(), CoroutineScope {
+class NewsFeedViewModel(var feedRepository: FeedRepository
+): ViewModel()  {
 
-    private var job = Job()
-    override var coroutineContext = job + Dispatchers.IO
+    var networkState: LiveData<Resource.Status>
+    var articleLiveData: LiveData<PagedList<ItemNewsFeed>>
+    private var executor: ExecutorService = Executors.newFixedThreadPool(5)
 
-    val resourceData = MutableLiveData<Resource<NewsFeed>>()
+    init {
 
-    val isLoading = NonNullObservableField(false)
+        val feedDataFactory = FeedDataFactory("", "", feedRepository)
+        networkState = Transformations.switchMap(
+            feedDataFactory.mutableLiveData
+        ) { dataSource -> dataSource.networkState }
 
-    fun loadFeed(strType: String, url: String) {
+        val pagedListConfig = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(10)
+            .setPageSize(10)
+            .build()
 
-        Log.d(BuildConfig.TAG, "Load News Feeds")
-
-        isLoading.set(true)
-        resourceData.value = Resource(Resource.Status.LOADING, null, null)
-
-        if (!job.isActive) {
-            job = Job()
-            coroutineContext = job + Dispatchers.IO
-        }
-
-        launch {
-            try {
-                withTimeout(4000) {
-                    try {
-                        feedRepository.getFeed(strType, url,
-                            object : FeedRepository.OnReadyCallback {
-                                override suspend fun onDataReady(data: NewsFeed) {
-                                    withContext(Dispatchers.Main) {
-                                        isLoading.set(false)
-                                        resourceData.value = Resource(Resource.Status.COMPLETED, data, null)
-                                    }
-                                }
-                            }
-                        )
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            isLoading.set(false)
-                            resourceData.value = Resource(Resource.Status.COMPLETED, null, e)
-                        }
-                    }
-                }
-            } catch (e: TimeoutCancellationException) {
-                withContext(Dispatchers.Main) {
-                    isLoading.set(false)
-                    resourceData.value = Resource(Resource.Status.COMPLETED, null, e)
-                }
-            }
-        }
+        articleLiveData = LivePagedListBuilder(feedDataFactory, pagedListConfig)
+            .setFetchExecutor(executor)
+            .build()
     }
 
-    override fun onCleared() {
-        cancel()
-        super.onCleared()
-    }
+    fun loadNewsFeed(strType: String, url: String) {
+        val feedDataFactory = FeedDataFactory(strType, url, feedRepository)
+        networkState = Transformations.switchMap(
+            feedDataFactory.mutableLiveData
+        ) { dataSource -> dataSource.networkState }
 
-    fun cancel() {
-        job.cancel()
+        val pagedListConfig = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(10)
+            .setPageSize(10)
+            .build()
+
+        articleLiveData = LivePagedListBuilder(feedDataFactory, pagedListConfig)
+            .setFetchExecutor(executor)
+            .build()
     }
 
 }

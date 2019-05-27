@@ -5,6 +5,70 @@ class Channel(val type: TypeChannel) {
     val items = mutableListOf<ItemChannel>()
 
     init {
+
+        if (type == TypeChannel.GAZETA){
+            items.add(
+                ItemChannel(
+                    "Газета.Ru - Новости дня",
+                    "https://www.gazeta.ru/export/rss/lenta.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Новости политики",
+                    "https://www.gazeta.ru/export/rss/politics.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Деловые новости",
+                    "https://www.gazeta.ru/export/rss/business.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Общество. Новости",
+                    "https://www.gazeta.ru/export/rss/social.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Военные новости",
+                    "https://www.gazeta.ru/export/rss/army.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Новости культуры",
+                    "https://www.gazeta.ru/export/rss/culture.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Новости науки",
+                    "https://www.gazeta.ru/export/rss/science.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Автоновости",
+                    "https://www.gazeta.ru/export/rss/auto.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Стильные новости",
+                    "https://www.gazeta.ru/export/rss/lifestyle.xml", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Новости спорта",
+                    "https://www.gazeta.ru/export/rss/sport.xml", type
+                )
+            )
+        }
+
         if (type == TypeChannel.LENTA) {
             items.add(
                 ItemChannel(

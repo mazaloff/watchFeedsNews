@@ -1,6 +1,6 @@
-package ru.observe.twits.uimodels.lenta
+package ru.observe.twits.uimodels.gazeta
 
-data class LentaRss(
+data class GazetaRss(
     val rss: Rss
 )
 

@@ -12,4 +12,5 @@ class ItemChannel(name: String, val link: String, val type: TypeChannel, var new
             field = value
             notifyPropertyChanged(BR.name)
         }
+
 }
