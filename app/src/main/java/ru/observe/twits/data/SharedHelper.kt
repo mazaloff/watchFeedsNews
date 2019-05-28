@@ -9,7 +9,7 @@ import java.lang.Exception
 class SharedHelper(context: Context) {
 
     companion object{
-        private const val NAME_SHARED = "NAME_SHARED"
+        private const val NAME_SHARED = "HELPER"
         private const val KEY_TYPE_CHANNEL = "KEY_TYPE_CHANNEL"
     }
 
