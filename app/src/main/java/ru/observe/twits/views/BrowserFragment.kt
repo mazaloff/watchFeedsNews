@@ -11,13 +11,17 @@ import ru.observe.twits.R
 
 class BrowserFragment:Fragment() {
 
+    companion object {
+        internal const val PARAM_URL = "PARAM_URL"
+    }
+
     private lateinit var url: String
     private lateinit var vBrowser: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState)
-        url = arguments?.getString("url") ?: ""
+        url = arguments?.getString(PARAM_URL) ?: ""
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

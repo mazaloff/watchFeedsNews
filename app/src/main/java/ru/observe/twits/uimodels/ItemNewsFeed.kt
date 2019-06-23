@@ -4,14 +4,15 @@ import android.databinding.BaseObservable
 import android.databinding.Bindable
 import android.support.v7.util.DiffUtil
 import com.android.databinding.library.baseAdapters.BR
+import java.io.Serializable
 
 class ItemNewsFeed(
     title: String,
     val link: String,
     val thumbnail: String,
-    description: String,
+    description: String?,
     val guid: String
-): BaseObservable() {
+): BaseObservable(), Serializable {
     @get:Bindable
     var title : String = title
         set(value) {
@@ -19,7 +20,7 @@ class ItemNewsFeed(
             notifyPropertyChanged(BR.title)
         }
     @get:Bindable
-    var description : String = description
+    var description : String = description ?: ""
         set(value) {
             field = value
             notifyPropertyChanged(BR.description)

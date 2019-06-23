@@ -6,6 +6,7 @@ enum class TypeChannel() : Serializable {
     LENTA,
     GAZETA,
     BBC,
+    WASHINGTONPOST,
     TWiT;
 
 

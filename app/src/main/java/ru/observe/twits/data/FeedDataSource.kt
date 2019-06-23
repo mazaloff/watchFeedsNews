@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.paging.PositionalDataSource
 import android.util.Log
 import kotlinx.coroutines.*
+
 import ru.observe.twits.BuildConfig
 import ru.observe.twits.uimodels.ItemNewsFeed
 import ru.observe.twits.uimodels.NewsFeed
@@ -22,6 +23,10 @@ internal class FeedDataSource(
 
     internal val initialLoading = MutableLiveData<Resource.Status>()
     internal val networkState = MutableLiveData<Resource.Status>()
+    internal val invalidatedState = MutableLiveData<Boolean>()
+
+    init {
+    }
 
     override fun loadInitial(params: LoadInitialParams, callback: LoadInitialCallback<ItemNewsFeed>) {
 
@@ -40,35 +45,32 @@ internal class FeedDataSource(
 
         launch {
             try {
-                withTimeout(30000) {
-                    delay(500)
-                    try {
-                        feedRepository.getFeed(strType, url,
-                            object : FeedRepository.OnReadyCallback {
-                                override suspend fun onDataReady(data: NewsFeed) {
-                                    withContext(Dispatchers.Main) {
-                                        currentFeed = data
-                                        initialLoading.value = Resource.Status.COMPLETED
-                                        networkState.value = Resource.Status.COMPLETED
-                                        Log.d(
-                                            BuildConfig.TAG, "loadInitial COMPLETED, requestedStartPosition = " + params.requestedStartPosition +
-                                                    ", requestedLoadSize = " + params.requestedLoadSize
-                                        )
-                                        val totalCount = data.items.size
-                                        val position = computeInitialLoadPosition(params, totalCount)
-                                        val loadSize = computeInitialLoadSize(params, position, totalCount)
-                                        val result = data.loadRange(position, loadSize)
-                                        callback.onResult(result, position, totalCount)
-                                    }
+                try {
+                    feedRepository.getFeed(strType, url,
+                        object : FeedRepository.OnReadyCallback {
+                            override suspend fun onDataReady(data: NewsFeed) {
+                                withContext(Dispatchers.Main) {
+                                    currentFeed = data
+                                    initialLoading.value = Resource.Status.COMPLETED
+                                    networkState.value = Resource.Status.COMPLETED
+                                    Log.d(
+                                        BuildConfig.TAG, "loadInitial COMPLETED, requestedStartPosition = " + params.requestedStartPosition +
+                                                ", requestedLoadSize = " + params.requestedLoadSize
+                                    )
+                                    val totalCount = data.items.size
+                                    val position = computeInitialLoadPosition(params, totalCount)
+                                    val loadSize = computeInitialLoadSize(params, position, totalCount)
+                                    val result = data.loadRange(position, loadSize)
+                                    callback.onResult(result, position, totalCount)
                                 }
                             }
-                        )
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            initialLoading.value = Resource.Status.FAILED
-                            networkState.value = Resource.Status.FAILED
-                            e.printStackTrace()
                         }
+                    )
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        initialLoading.value = Resource.Status.FAILED
+                        networkState.value = Resource.Status.FAILED
+                        e.printStackTrace()
                     }
                 }
             } catch (e: TimeoutCancellationException) {
@@ -95,30 +97,27 @@ internal class FeedDataSource(
                 coroutineContext = job + Dispatchers.IO
             }
             launch {
-                delay(500)
                 try {
-                    withTimeout(30000) {
-                        try {
-                            feedRepository.getFeed(strType, url,
-                                object : FeedRepository.OnReadyCallback {
-                                    override suspend fun onDataReady(data: NewsFeed) {
-                                        withContext(Dispatchers.Main) {
-                                            currentFeed = data
-                                            initialLoading.value = Resource.Status.COMPLETED
-                                            networkState.value = Resource.Status.COMPLETED
-                                            Log.d(BuildConfig.TAG, "loadRange LOADING, startPosition = " + params.startPosition + ", loadSize = " + params.loadSize)
-                                            val result = data.loadRange(params.startPosition, params.loadSize)
-                                            callback.onResult(result)
-                                        }
+                    try {
+                        feedRepository.getFeed(strType, url,
+                            object : FeedRepository.OnReadyCallback {
+                                override suspend fun onDataReady(data: NewsFeed) {
+                                    withContext(Dispatchers.Main) {
+                                        currentFeed = data
+                                        initialLoading.value = Resource.Status.COMPLETED
+                                        networkState.value = Resource.Status.COMPLETED
+                                        Log.d(BuildConfig.TAG, "loadRange LOADING, startPosition = " + params.startPosition + ", loadSize = " + params.loadSize)
+                                        val result = data.loadRange(params.startPosition, params.loadSize)
+                                        callback.onResult(result)
                                     }
                                 }
-                            )
-                        } catch (e: Exception) {
-                            withContext(Dispatchers.Main) {
-                                initialLoading.value = Resource.Status.FAILED
-                                networkState.value = Resource.Status.FAILED
-                                e.printStackTrace()
                             }
+                        )
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            initialLoading.value = Resource.Status.FAILED
+                            networkState.value = Resource.Status.FAILED
+                            e.printStackTrace()
                         }
                     }
                 } catch (e: TimeoutCancellationException) {

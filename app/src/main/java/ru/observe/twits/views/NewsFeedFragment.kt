@@ -1,17 +1,24 @@
 package ru.observe.twits.views
 
 import android.arch.lifecycle.Observer
-import android.os.Bundle
 import android.databinding.DataBindingUtil
+import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.view.*
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 
+import ru.observe.twits.BuildConfig
 import ru.observe.twits.R
-import ru.observe.twits.databinding.AcNewsFeedBinding
-import ru.observe.twits.uimodels.ItemNewsFeed
 import ru.observe.twits.data.Resource
-import ru.observe.twits.viewmodels.*
+import ru.observe.twits.databinding.AcNewsFeedBinding
+import ru.observe.twits.uimodels.ItemChannel
+import ru.observe.twits.uimodels.ItemNewsFeed
+import ru.observe.twits.viewmodels.NewsFeedViewAdapter
+import ru.observe.twits.viewmodels.NewsFeedViewModel
 
 
 class NewsFeedFragment : Fragment(), NewsFeedViewAdapter.OnItemClickListener {
@@ -20,8 +27,7 @@ class NewsFeedFragment : Fragment(), NewsFeedViewAdapter.OnItemClickListener {
 
     private lateinit var binding: AcNewsFeedBinding
 
-    private lateinit var linkNews: String
-    private lateinit var typeNews: String
+    private lateinit var itemChannel: ItemChannel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -33,11 +39,8 @@ class NewsFeedFragment : Fragment(), NewsFeedViewAdapter.OnItemClickListener {
         )
 
         arguments?.apply {
-            getString("linkNews")?.let {
-                linkNews = it
-            }
-            getString("typeNews")?.let {
-                typeNews = it
+            getSerializable(ItemChannel::class.java.simpleName)?.let {
+                itemChannel = it as ItemChannel
             }
         }
 
@@ -56,7 +59,7 @@ class NewsFeedFragment : Fragment(), NewsFeedViewAdapter.OnItemClickListener {
         binding.newsFeedsRecView.adapter = NewsFeedViewAdapter(this)
 
         if (savedInstanceState == null) {
-            newsFeedViewModel.loadNewsFeed(typeNews, linkNews)
+            newsFeedViewModel.loadItemChannel(itemChannel)
         }
 
         observeNewsFeedModel()
@@ -75,12 +78,17 @@ class NewsFeedFragment : Fragment(), NewsFeedViewAdapter.OnItemClickListener {
                 adapter.setNetworkState(networkState)
             }
         )
+        newsFeedViewModel.invalidatedState.observe(this,
+            Observer {
+                Log.d(BuildConfig.TAG, "invalidated State example")
+            }
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.menu_news_feeds_refresh -> {
-                newsFeedViewModel.loadNewsFeed(typeNews, linkNews)
+                newsFeedViewModel.loadItemChannel(itemChannel)
                 observeNewsFeedModel()
                 return true
             }

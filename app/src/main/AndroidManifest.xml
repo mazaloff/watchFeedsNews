@@ -14,8 +14,9 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
+            android:usesCleartextTraffic="true"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
+            android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning" tools:targetApi="m">
         <activity android:name="ru.observe.twits.views.ChannelsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

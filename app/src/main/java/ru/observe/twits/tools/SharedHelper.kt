@@ -1,4 +1,4 @@
-package ru.observe.twits.data
+package ru.observe.twits.tools
 
 import android.content.Context
 import android.content.SharedPreferences

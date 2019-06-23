@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.v4.app.FragmentManager
 import android.util.AndroidRuntimeException
 import android.util.Log
@@ -18,6 +17,7 @@ import ru.observe.twits.R
 
 import ru.observe.twits.databinding.AcPlaceNewsFeedBinding
 import ru.observe.twits.services.PlayService
+import ru.observe.twits.uimodels.ItemChannel
 import ru.observe.twits.viewmodels.NewsFeedViewModel
 import ru.observe.twits.viewmodels.NewsFeedViewModelFactory
 import javax.inject.Inject
@@ -25,8 +25,7 @@ import javax.inject.Inject
 class NewsFeedActivity : DaggerAppCompatActivity() {
 
     companion object {
-        private const val PARAM_LINK_NEWS = "PARAM_LINK_NEWS"
-        private const val PARAM_TYPE_NEWS = "PARAM_TYPE_NEWS"
+        private const val PARAM_ITEM_CHANNEL = "PARAM_ITEM_CHANNEL"
         private const val PARAM_URL_WEB = "PARAM_URL_WEB"
 
         private const val TAG_NEWS_FEED_VIEW_MODEL = "TAG_NEWS_FEED_VIEW_MODEL"
@@ -38,9 +37,8 @@ class NewsFeedActivity : DaggerAppCompatActivity() {
 
     private lateinit var bindingFragment: AcPlaceNewsFeedBinding
 
+    private lateinit var itemChannel: ItemChannel
     private var urlWeb: String? = null
-    private lateinit var linkNews: String
-    private lateinit var typeNews: String
 
     private val nameActivity = this::class.java.simpleName
 
@@ -62,15 +60,14 @@ class NewsFeedActivity : DaggerAppCompatActivity() {
 
         val fragment = NewsFeedFragment()
         fragment.arguments = Bundle().apply {
-            putString("linkNews", linkNews)
-            putString("typeNews", typeNews)
+            putSerializable(ItemChannel::class.java.simpleName, itemChannel)
         }
 
         supportFragmentManager.beginTransaction().replace(
             bindingFragment.fragmentPlace.id, fragment
         ).commitAllowingStateLoss()
 
-        urlWeb?.let { showArticle(it)}
+        urlWeb?.let { showArticle(it) }
     }
 
     override fun onStart() {
@@ -102,8 +99,7 @@ class NewsFeedActivity : DaggerAppCompatActivity() {
         super.onSaveInstanceState(outState)
         Log.d(BuildConfig.TAG, "$nameActivity - onSaveInstanceState")
         outState?.apply {
-            putString(PARAM_LINK_NEWS, linkNews)
-            putString(PARAM_TYPE_NEWS, typeNews)
+            putSerializable(PARAM_ITEM_CHANNEL, itemChannel)
         }
 
     }
@@ -112,18 +108,20 @@ class NewsFeedActivity : DaggerAppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         Log.d(BuildConfig.TAG, "$nameActivity - onRestoreInstanceState")
         savedInstanceState?.apply {
-            linkNews = getString(PARAM_LINK_NEWS, "")
-            typeNews = getString(PARAM_TYPE_NEWS, "")
+            itemChannel =
+                (getSerializable(PARAM_ITEM_CHANNEL)
+                    ?: throw AndroidRuntimeException("not ItemChannel")) as ItemChannel
             urlWeb = getString(PARAM_URL_WEB)
         }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        intent?.extras?.let {
-            linkNews = it.getString("linkNews") ?: throw AndroidRuntimeException("not linkNews")
-            typeNews = it.getString("typeNews") ?: throw AndroidRuntimeException("not typeNews")
-            urlWeb = it.getString("urlWeb")
+        intent?.extras?.apply {
+            itemChannel =
+                (getSerializable(ItemChannel::class.java.simpleName)
+                    ?: throw AndroidRuntimeException("not ItemChannel")) as ItemChannel
+            urlWeb = getString("urlWeb")
         }
     }
 
@@ -146,9 +144,10 @@ class NewsFeedActivity : DaggerAppCompatActivity() {
             bindingFragment.fragmentSite?.apply {
                 supportFragmentManager.popBackStack("showUrl", FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 visibility = View.GONE
-                return}
+                return
+            }
             supportFragmentManager.popBackStack("showFeed", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        }else {
+        } else {
             super.onBackPressed()
         }
     }
@@ -156,7 +155,7 @@ class NewsFeedActivity : DaggerAppCompatActivity() {
     fun showArticle(url: String) {
         val fragment = BrowserFragment()
         fragment.arguments = Bundle().apply {
-            putString("url", url)
+            putString(BrowserFragment.PARAM_URL, url)
         }
 
         val frameSite = bindingFragment.fragmentSite
@@ -178,8 +177,7 @@ class NewsFeedActivity : DaggerAppCompatActivity() {
             putExtra("title", title)
             putExtra("urlMp3", mp3)
             putExtra("urlWeb", url)
-            putExtra("linkNews", linkNews)
-            putExtra("typeNews", typeNews)
+            putExtra(ItemChannel::class.java.simpleName, itemChannel)
             startService(this)
         }
     }

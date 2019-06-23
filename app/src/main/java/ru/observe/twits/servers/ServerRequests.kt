@@ -10,6 +10,7 @@ import ru.observe.twits.uimodels.TypeChannel
 import ru.observe.twits.uimodels.gazeta.GazetaRss
 import ru.observe.twits.uimodels.lenta.LentaRss
 import ru.observe.twits.uimodels.twit.TwitRss
+import ru.observe.twits.uimodels.washingtonpost.WashingtonPostRss
 import java.lang.Exception
 import java.net.*
 import java.nio.charset.Charset
@@ -20,12 +21,23 @@ object ServerRequests {
 
     fun createRequest(type: TypeChannel, url: String): NewsFeed {
         val urlCon = URL(url).openConnection() as HttpURLConnection
+        urlCon.requestMethod = "GET";
+        urlCon.setRequestProperty("Content-Type", "text/xml;charset=utf-8");
+        urlCon.setRequestProperty("Connection", "keep-alive")
+        urlCon.setRequestProperty("Cache-Control", "no-cache")
+        urlCon.setRequestProperty("Accept", "text/xml")
+        urlCon.setRequestProperty("User-Agent", "AppWatchTwits")
+        urlCon.useCaches = false
         var xml = ""
         try {
             urlCon.connect()
             if (urlCon.responseCode == HttpURLConnection.HTTP_OK) {
                 val arrayBytes = urlCon.inputStream.readBytes()
-                val charset = parserCharset(arrayBytes.inputStream().bufferedReader().readLines()[0])
+                val firstLine = arrayBytes.inputStream().bufferedReader().readLines()[0]
+                if (firstLine.startsWith("<!")) {
+                    return createRequest(type, url)
+                }
+                val charset = parserCharset(firstLine)
                 xml = String(arrayBytes, charset)
             } else {
                 RuntimeException(urlCon.responseMessage)
@@ -40,13 +52,14 @@ object ServerRequests {
         return when(type) {
             TypeChannel.LENTA -> NewsFeed(Gson().fromJson(json, LentaRss::class.java))
             TypeChannel.GAZETA -> NewsFeed(Gson().fromJson(json, GazetaRss::class.java))
-            TypeChannel.TWiT -> NewsFeed(Gson().fromJson(json, TwitRss::class.java))
             TypeChannel.BBC -> NewsFeed(Gson().fromJson(json, BbcRss::class.java))
+            TypeChannel.WASHINGTONPOST -> NewsFeed(Gson().fromJson(json, WashingtonPostRss::class.java))
+            TypeChannel.TWiT -> NewsFeed(Gson().fromJson(json, TwitRss::class.java))
         }
     }
 
     private fun parserCharset(stringInfo: String): Charset {
-        val rx = """encoding="(.*)"""".toRegex()
+        val rx = """encoding="(\S+)"""".toRegex()
         val found = rx.findAll(stringInfo).toList()
         if (found.isNotEmpty()) {
             return try {
@@ -78,6 +91,7 @@ object ServerRequests {
             result = result.replace(elem, "")
         }
         result = result.replace(",", "")
+        result = result.replace("<br/>", "")
 
         if (result.isEmpty()) return result
 

@@ -3,7 +3,6 @@ package ru.observe.twits.views
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.content.SharedPreferences
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -13,9 +12,8 @@ import android.view.MenuItem
 import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity
 import ru.observe.twits.BuildConfig
-import ru.observe.twits.R
 import ru.observe.twits.data.Resource
-import ru.observe.twits.data.SharedHelper
+import ru.observe.twits.tools.SharedHelper
 
 import ru.observe.twits.databinding.AcChannelsBinding
 import ru.observe.twits.uimodels.ItemChannel
@@ -24,6 +22,7 @@ import ru.observe.twits.viewmodels.ChannelsViewAdapter
 import ru.observe.twits.viewmodels.ChannelsViewModel
 import ru.observe.twits.viewmodels.ChannelsViewModelFactory
 import javax.inject.Inject
+import ru.observe.twits.R
 
 class ChannelsActivity : DaggerAppCompatActivity(), ChannelsViewAdapter.OnItemLinkClickListener {
 
@@ -34,8 +33,7 @@ class ChannelsActivity : DaggerAppCompatActivity(), ChannelsViewAdapter.OnItemLi
 
     override fun onItemLinkClick(itemChannel: ItemChannel) {
         Intent(this, NewsFeedActivity::class.java)
-            .putExtra("linkNews", itemChannel.link)
-            .putExtra("typeNews", itemChannel.type.toString())
+            .putExtra(ItemChannel::class.java.simpleName, itemChannel)
             .apply { startActivity(this) }
     }
 
@@ -92,7 +90,6 @@ class ChannelsActivity : DaggerAppCompatActivity(), ChannelsViewAdapter.OnItemLi
                 }
             }
         )
-
     }
 
     override fun onStart() {
@@ -117,13 +114,13 @@ class ChannelsActivity : DaggerAppCompatActivity(), ChannelsViewAdapter.OnItemLi
 
     override fun onDestroy() {
         super.onDestroy()
-        mSharedHelper.setTypeChannel(currentTypeChannel)
         Log.d(BuildConfig.TAG, "$nameActivity - onDestroy")
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         Log.d(BuildConfig.TAG, "$nameActivity - onSaveInstanceState")
+        mSharedHelper.setTypeChannel(currentTypeChannel)
         outState?.apply {
             putSerializable(PARAM_CURRENT_TYPE_CHANNEL, currentTypeChannel)
         }
@@ -160,6 +157,11 @@ class ChannelsActivity : DaggerAppCompatActivity(), ChannelsViewAdapter.OnItemLi
             }
             R.id.menu_bbc -> {
                 currentTypeChannel = TypeChannel.BBC
+                binding.viewModel?.loadLinks(currentTypeChannel)
+                return true
+            }
+            R.id.menu_washingtonpost -> {
+                currentTypeChannel = TypeChannel.WASHINGTONPOST
                 binding.viewModel?.loadLinks(currentTypeChannel)
                 return true
             }

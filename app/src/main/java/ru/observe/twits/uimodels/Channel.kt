@@ -5,6 +5,56 @@ class Channel(val type: TypeChannel) {
     val items = mutableListOf<ItemChannel>()
 
     init {
+        if (type == TypeChannel.WASHINGTONPOST){
+            items.add(
+                ItemChannel(
+                    "World",
+                    "http://feeds.washingtonpost.com/rss/world", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "National",
+                    "http://feeds.washingtonpost.com/rss/national", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Politics",
+                    "http://feeds.washingtonpost.com/rss/politics", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Business",
+                    "http://feeds.washingtonpost.com/rss/business", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Opinions",
+                    "http://feeds.washingtonpost.com/rss/opinions", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Local",
+                    "http://feeds.washingtonpost.com/rss/local", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Sports",
+                    "http://feeds.washingtonpost.com/rss/sports", type
+                )
+            )
+            items.add(
+                ItemChannel(
+                    "Lifestyle",
+                    "http://feeds.washingtonpost.com/rss/lifestyle", type
+                )
+            )
+        }
 
         if (type == TypeChannel.GAZETA){
             items.add(
@@ -149,6 +199,7 @@ class Channel(val type: TypeChannel) {
                 )
             )
         }
+
         if (type == TypeChannel.BBC) {
             items.add(
                 ItemChannel(
@@ -211,6 +262,7 @@ class Channel(val type: TypeChannel) {
                 )
             )
         }
+
         if (type == TypeChannel.TWiT) {
             items.add(
                 ItemChannel(

@@ -12,12 +12,15 @@ import ru.observe.twits.data.Resource
 import ru.observe.twits.uimodels.ItemNewsFeed
 import ru.observe.twits.data.FeedRepository
 import ru.observe.twits.data.FeedDataFactory
+import ru.observe.twits.uimodels.ItemChannel
 import java.util.concurrent.ExecutorService
 
 class NewsFeedViewModel(var feedRepository: FeedRepository
 ): ViewModel()  {
 
     var networkState: LiveData<Resource.Status>
+    var invalidatedState: LiveData<Boolean>
+
     var articleLiveData: LiveData<PagedList<ItemNewsFeed>>
     private var executor: ExecutorService = Executors.newFixedThreadPool(5)
 
@@ -27,6 +30,9 @@ class NewsFeedViewModel(var feedRepository: FeedRepository
         networkState = Transformations.switchMap(
             feedDataFactory.mutableLiveData
         ) { dataSource -> dataSource.networkState }
+        invalidatedState = Transformations.switchMap(
+            feedDataFactory.mutableLiveData
+        ) { dataSource -> dataSource.invalidatedState }
 
         val pagedListConfig = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
@@ -39,11 +45,14 @@ class NewsFeedViewModel(var feedRepository: FeedRepository
             .build()
     }
 
-    fun loadNewsFeed(strType: String, url: String) {
-        val feedDataFactory = FeedDataFactory(strType, url, feedRepository)
+    fun loadItemChannel(itemChannel: ItemChannel) {
+        val feedDataFactory = FeedDataFactory(itemChannel.type.toString(), itemChannel.link, feedRepository)
         networkState = Transformations.switchMap(
             feedDataFactory.mutableLiveData
         ) { dataSource -> dataSource.networkState }
+        invalidatedState = Transformations.switchMap(
+            feedDataFactory.mutableLiveData
+        ) { dataSource -> dataSource.invalidatedState }
 
         val pagedListConfig = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
