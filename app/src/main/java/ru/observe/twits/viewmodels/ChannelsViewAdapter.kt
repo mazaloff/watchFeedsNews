@@ -9,11 +9,10 @@ import ru.observe.twits.databinding.ItemChannelBinding
 
 import ru.observe.twits.uimodels.ItemChannel
 import android.content.Context
-import android.support.v7.util.DiffUtil
 import android.widget.ImageView
+import ru.observe.twits.R
 import ru.observe.twits.tools.CircleTransform
 import kotlin.math.min
-import android.os.Parcelable
 
 
 class ChannelsViewAdapter(
@@ -78,6 +77,7 @@ class ChannelsViewAdapter(
                         .resize(widthPx, heightPx)
                         .centerCrop()
                         .transform(CircleTransform(15, 0))
+                        .placeholder(R.mipmap.no_image)
                         .into(binding.itemRootLayout.getChildAt(i) as ImageView)
                 }
             }

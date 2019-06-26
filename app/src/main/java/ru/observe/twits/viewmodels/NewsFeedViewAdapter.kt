@@ -10,6 +10,7 @@ import android.view.ViewGroup
 
 import com.squareup.picasso.Picasso
 import ru.observe.twits.BuildConfig
+import ru.observe.twits.R
 import ru.observe.twits.data.Resource
 
 import ru.observe.twits.databinding.ItemNewsFeedBinding
@@ -91,6 +92,7 @@ class NewsFeedViewAdapter(private val listener: OnItemClickListener
                     .resize(widthPx, heightPx)
                     .centerCrop()
                     .transform(CircleTransform(15, 0))
+                    .placeholder(R.mipmap.no_image)
                     .into(binding.itemThumb)
             }
             if (listener != null) {

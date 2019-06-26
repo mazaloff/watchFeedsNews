@@ -45,35 +45,27 @@ internal class FeedDataSource(
 
         launch {
             try {
-                try {
-                    feedRepository.getFeed(strType, url,
-                        object : FeedRepository.OnReadyCallback {
-                            override suspend fun onDataReady(data: NewsFeed) {
-                                withContext(Dispatchers.Main) {
-                                    currentFeed = data
-                                    initialLoading.value = Resource.Status.COMPLETED
-                                    networkState.value = Resource.Status.COMPLETED
-                                    Log.d(
-                                        BuildConfig.TAG, "loadInitial COMPLETED, requestedStartPosition = " + params.requestedStartPosition +
-                                                ", requestedLoadSize = " + params.requestedLoadSize
-                                    )
-                                    val totalCount = data.items.size
-                                    val position = computeInitialLoadPosition(params, totalCount)
-                                    val loadSize = computeInitialLoadSize(params, position, totalCount)
-                                    val result = data.loadRange(position, loadSize)
-                                    callback.onResult(result, position, totalCount)
-                                }
+                feedRepository.getFeed(strType, url,
+                    object : FeedRepository.OnReadyCallback {
+                        override suspend fun onDataReady(data: NewsFeed) {
+                            withContext(Dispatchers.Main) {
+                                currentFeed = data
+                                initialLoading.value = Resource.Status.COMPLETED
+                                networkState.value = Resource.Status.COMPLETED
+                                Log.d(
+                                    BuildConfig.TAG, "loadInitial COMPLETED, requestedStartPosition = " + params.requestedStartPosition +
+                                            ", requestedLoadSize = " + params.requestedLoadSize
+                                )
+                                val totalCount = data.items.size
+                                val position = computeInitialLoadPosition(params, totalCount)
+                                val loadSize = computeInitialLoadSize(params, position, totalCount)
+                                val result = data.loadRange(position, loadSize)
+                                callback.onResult(result, position, totalCount)
                             }
                         }
-                    )
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        initialLoading.value = Resource.Status.FAILED
-                        networkState.value = Resource.Status.FAILED
-                        e.printStackTrace()
                     }
-                }
-            } catch (e: TimeoutCancellationException) {
+                )
+            } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     initialLoading.value = Resource.Status.FAILED
                     networkState.value = Resource.Status.FAILED
@@ -91,36 +83,27 @@ internal class FeedDataSource(
         Log.d(BuildConfig.TAG, "loadRange LOADING, startPosition = " + params.startPosition + ", loadSize = " + params.loadSize)
 
         if (currentFeed == null) {
-
             if (!job.isActive) {
                 job = Job()
                 coroutineContext = job + Dispatchers.IO
             }
             launch {
                 try {
-                    try {
-                        feedRepository.getFeed(strType, url,
-                            object : FeedRepository.OnReadyCallback {
-                                override suspend fun onDataReady(data: NewsFeed) {
-                                    withContext(Dispatchers.Main) {
-                                        currentFeed = data
-                                        initialLoading.value = Resource.Status.COMPLETED
-                                        networkState.value = Resource.Status.COMPLETED
-                                        Log.d(BuildConfig.TAG, "loadRange LOADING, startPosition = " + params.startPosition + ", loadSize = " + params.loadSize)
-                                        val result = data.loadRange(params.startPosition, params.loadSize)
-                                        callback.onResult(result)
-                                    }
+                    feedRepository.getFeed(strType, url,
+                        object : FeedRepository.OnReadyCallback {
+                            override suspend fun onDataReady(data: NewsFeed) {
+                                withContext(Dispatchers.Main) {
+                                    currentFeed = data
+                                    initialLoading.value = Resource.Status.COMPLETED
+                                    networkState.value = Resource.Status.COMPLETED
+                                    Log.d(BuildConfig.TAG, "loadRange LOADING, startPosition = " + params.startPosition + ", loadSize = " + params.loadSize)
+                                    val result = data.loadRange(params.startPosition, params.loadSize)
+                                    callback.onResult(result)
                                 }
                             }
-                        )
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            initialLoading.value = Resource.Status.FAILED
-                            networkState.value = Resource.Status.FAILED
-                            e.printStackTrace()
                         }
-                    }
-                } catch (e: TimeoutCancellationException) {
+                    )
+                } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         initialLoading.value = Resource.Status.FAILED
                         networkState.value = Resource.Status.FAILED
@@ -128,10 +111,9 @@ internal class FeedDataSource(
                     }
                 }
             }
-
         } else {
             launch {
-                delay(500)
+                delay(300)
                 withContext(Dispatchers.Main) {
                     currentFeed?.let {
                         val result = it.loadRange(params.startPosition, params.loadSize)
